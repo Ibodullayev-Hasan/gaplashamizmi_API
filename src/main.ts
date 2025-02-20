@@ -18,7 +18,6 @@ async function bootstrap() {
     app.setGlobalPrefix('api/v1')
     const configService = app.get(ConfigService)
 
-
     // 
     app.useGlobalPipes(new ValidationPipe({
       whitelist: true,
@@ -34,8 +33,6 @@ async function bootstrap() {
         return new BadRequestException(messages);
       }
     }));
-
-
 
     const options = new DocumentBuilder()
       .setTitle(`GAPLASHAMIZ 😉`)
@@ -58,3 +55,4 @@ async function bootstrap() {
   }
 }
 bootstrap();
+ 
