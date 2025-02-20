@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { BadRequestException, HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
-import { NoutFoundExceptionFilter } from './filters/nout-found-exeption';
 import * as cookie_parser from "cookie-parser"
 
 async function bootstrap() {
@@ -37,8 +36,6 @@ async function bootstrap() {
     }));
 
 
-    // 
-    app.useGlobalFilters(new NoutFoundExceptionFilter())
 
     const options = new DocumentBuilder()
       .setTitle(`GAPLASHAMIZ 😉`)
