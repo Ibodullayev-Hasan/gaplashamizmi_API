@@ -41,7 +41,6 @@ async function bootstrap() {
       .setTitle(`GAPLASHAMIZ 😉`)
       .setDescription(`Bu "GAPLASHAMIZ 😉" loyihasi uchun API dokumenti`)
       .setVersion('1.0')
-      .addTag(`GAPLASHAMIZ 😉`)
       .build()
 
     const dokument = SwaggerModule.createDocument(app, options)
