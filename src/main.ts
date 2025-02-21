@@ -1,50 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { BadRequestException, HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
-import * as cookie_parser from "cookie-parser"
+import { HttpException, HttpStatus, } from '@nestjs/common';
+import { corsConfig, setUpGlobalFilter, setupGlobalPipes, setUpswagger } from './configs';
+import { notFoundMiddleware } from './common/middlewares/not-found.middleware';
 
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
-    app.enableCors({
-      origin: true,
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      credentials: true,
-    });
-    app.use(cookie_parser())
-
-    app.setGlobalPrefix('api/v1')
     const configService = app.get(ConfigService)
 
-    // 
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      exceptionFactory: (errors) => {
-        const messages = errors.map((error) => {
-          return {
-            property: error.property,
-            constraints: error.constraints,
-          };
-        });
-        return new BadRequestException(messages);
-      }
-    }));
+    app.setGlobalPrefix('api/v1')
 
-    const options = new DocumentBuilder()
-      .setTitle(`GAPLASHAMIZ 😉`)
-      .setDescription(`Bu "GAPLASHAMIZ 😉" loyihasi uchun API dokumenti`)
-      .setVersion('1.0')
-      .build()
+    corsConfig(app)
+    setUpswagger(app)
+    setupGlobalPipes(app)
+    setUpGlobalFilter(app)
 
-    const dokument = SwaggerModule.createDocument(app, options)
-    SwaggerModule.setup('api/docs/gaplashamiz', app, dokument)
+    app.use('*', notFoundMiddleware)
 
     const port = configService.get<number>('SERVER_PORT') ?? 5000;
-
+      
     await app.listen(port);
     console.log(`Server run 🚀 port:${port}`);
   } catch (error: any) {
@@ -55,4 +31,3 @@ async function bootstrap() {
   }
 }
 bootstrap();
- 
