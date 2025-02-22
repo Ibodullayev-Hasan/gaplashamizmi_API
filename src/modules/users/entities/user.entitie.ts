@@ -1,5 +1,5 @@
 import { IUsers } from "src/interfaces/users.interface";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { UserProfile } from "./user-profiles.entitie";
 import { SavedMessages } from "./saved-messages.entitie";
 
@@ -8,7 +8,7 @@ export class User implements IUsers {
 	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
-	@Column({ type: "text" })
+	@Column({ type: "varchar", length: 100 })
 	full_name: string;
 
 	@Column({ type: "text", unique: true })
@@ -20,13 +20,13 @@ export class User implements IUsers {
 	@Column({ type: "text" })
 	password: string;
 
-	@Column({ type: "varchar", default: true })
+	@Column({ type: "boolean", default: true })
 	is_active?: boolean;
 
-	@Column({ type: "date" })
+	@CreateDateColumn({ name: "created_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
 	created_at?: Date;
 
-	@Column({ type: "date" })
+	@UpdateDateColumn({ name: "updated_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
 	updated_at?: Date;
 
 	@OneToOne(() => UserProfile)

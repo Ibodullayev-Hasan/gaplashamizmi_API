@@ -17,10 +17,10 @@ async function bootstrap() {
     setupGlobalPipes(app)
     setUpGlobalFilter(app)
 
-    app.use('*', notFoundMiddleware)
 
     const port = configService.get<number>('SERVER_PORT') ?? 5000;
-      
+    
+    app.use('*/api/v1/', notFoundMiddleware); 
     await app.listen(port);
     console.log(`Server run 🚀 port:${port}`);
   } catch (error: any) {
