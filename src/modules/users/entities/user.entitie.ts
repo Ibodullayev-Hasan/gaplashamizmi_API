@@ -1,6 +1,7 @@
 import { IUsers } from "src/interfaces/users.interface";
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserProfile } from "./user-profiles.entitie";
+import { SavedMessages } from "./saved-messages.entitie";
 
 @Entity({ name: "users" })
 export class User implements IUsers {
@@ -32,4 +33,7 @@ export class User implements IUsers {
 	@JoinColumn()
 	user_profile?: UserProfile;
 
+	@OneToOne(() => SavedMessages)
+	@JoinColumn()
+	saved_messages?: SavedMessages;
 }
