@@ -9,7 +9,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const message = exception.message
 
-    const time = new Date().toISOString();
+    const time = new Date().toLocaleString();
 
     response.status(status).json({
       statusCode: status,
