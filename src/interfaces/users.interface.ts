@@ -1,3 +1,4 @@
+import { SavedMessages } from "src/modules/users/entities/saved-messages.entitie";
 import { UserProfile } from "src/modules/users/entities/user-profiles.entitie";
 
 export interface IUsers {
@@ -10,4 +11,5 @@ export interface IUsers {
 	created_at?: Date
 	updated_at?: Date
 	user_profile?: UserProfile
+	saved_messages?:SavedMessages
 }
