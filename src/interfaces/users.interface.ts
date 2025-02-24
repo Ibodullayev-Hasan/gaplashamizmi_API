@@ -5,7 +5,7 @@ export interface IUsers {
 	id: string
 	full_name: string
 	email: string
-	phone: string
+	// phone: string
 	password: string
 	is_active?: boolean
 	created_at?: Date
