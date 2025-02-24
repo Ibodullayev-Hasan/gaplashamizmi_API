@@ -1,22 +1,27 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, NotFoundException } from "@nestjs/common";
+import { Response } from "express";
 
-@Catch(HttpException)
-export class HttpExceptionFilter implements ExceptionFilter {
+@Catch(NotFoundException)
+export class NotFoundExceptionFilter implements ExceptionFilter {
+
   catch(exception: HttpException, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const status = exception.getStatus();
-    const message = exception.message
-    const originalUrl = ctx.getRequest<Request>().originalUrl
+    const ctx = host.switchToHttp()
+    const response = ctx.getResponse<Response>()
+    const status = exception.getStatus()
 
-    const time = new Date().toLocaleString();
+    const message =
+      exception.message.split(" /", 2)[0] === "Cannot GET" ||
+        exception.message.split(" /", 2)[0] === "Cannot POST" ||
+        exception.message.split(" /", 2)[0] === "Cannot PUT" ||
+        exception.message.split(" /", 2)[0] === "Cannot HEAD" ||
+        exception.message.split(" /", 2)[0] === "Cannot PATCH" ||
+        exception.message.split(" /", 2)[0] === "Cannot DELETE"
+        ? `Noto'g'ri marshrut`
+        : exception.message
 
-    response.status(status).json({
-      statusCode: status,
-      timestamp: time,
-      originalUrl,
+    response.status(status).send({
       message,
-    });
+      statusCode: status
+    })
   }
 }

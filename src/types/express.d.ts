@@ -1,11 +1,7 @@
-import { IUsers } from "src/interfaces/users.interface"
+import { User } from "src/entities";
 
-declare global {
-	namespace Express {
-		interface Request {
-			user?: IUsers
-		}
+declare module 'express' {
+	export interface Request {
+		user?: User;
 	}
 }
-
-export { }

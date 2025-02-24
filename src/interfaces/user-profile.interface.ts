@@ -7,4 +7,5 @@ export interface IUserProfile {
 	chat_back_img: string
 	chat_back_color: string
 	chat_lang: chatLanguage
+	user_id:string
 }

@@ -8,17 +8,18 @@ export class UserProfile implements Partial<IUserProfile> {
 	id: string;
 
 	@Column({ type: "varchar", default: chatTheme.LIGHT })
-	chat_theme: chatTheme;
+	chat_theme?: chatTheme;
 
 	@Column({ type: "varchar", default: chatFont.SANS_SERIF })
-	chat_font: chatFont;
+	chat_font?: chatFont;
 
 	@Column({ type: "varchar", default: "skyblue" })
-	chat_back_color: string;
+	chat_back_color?: string;
 
 	@Column({ type: "text", default: "https://example.com/test-image" })
 	chat_back_img?: string;
 
 	@Column({ type: "varchar", length: 15, default: chatLanguage.UZB })
 	chat_lang?: chatLanguage;
+
 }

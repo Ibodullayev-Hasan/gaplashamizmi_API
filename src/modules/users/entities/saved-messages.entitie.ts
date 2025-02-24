@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 @Entity("savedMessages")
 export class SavedMessages implements Partial<ISavedMessages> {
 	@PrimaryGeneratedColumn("uuid")
-	id?: string;
+	id: string;
 
 	@Column({ type: "text", nullable: true, default: null })
 	saved_text?: string;

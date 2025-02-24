@@ -29,11 +29,11 @@ export class User implements IUsers {
 	@UpdateDateColumn({ name: "updated_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
 	updated_at?: Date;
 
-	@OneToOne(() => UserProfile)
+	@OneToOne(() => UserProfile, { cascade: true, eager: true })
 	@JoinColumn()
 	user_profile?: UserProfile;
 
-	@OneToOne(() => SavedMessages)
+	@OneToOne(() => SavedMessages, { cascade: true, eager: true })
 	@JoinColumn()
 	saved_messages?: SavedMessages;
 }
