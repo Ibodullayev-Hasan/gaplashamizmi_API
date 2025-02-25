@@ -35,8 +35,8 @@ export class UsersService {
 
       const newUser = this.userRepo.create({
         ...createUserDto,
-        user_profile: {}, 
-        saved_messages: {}  
+        user_profile: {},
+        saved_messages: {}
       });
 
       const savedUser = await this.userRepo.save(newUser);
@@ -54,13 +54,20 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return this.userRepo.find({
+  async findAll(): Promise<User[]> {
+    const users = await this.userRepo.find({
       relations: {
         user_profile: true,
         saved_messages: true
       }
     });
+    console.log(users.map((el) => {
+      delete el.password
+      return el
+    }));
+    console.log('sad');
+    
+    return users
   }
 
   findOne(id: number) {
