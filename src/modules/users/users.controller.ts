@@ -11,7 +11,7 @@ export class UsersController {
 
   // register
   @Post('new')
-  @UseGuards(EmailGuard)
+  // @UseGuards(EmailGuard)
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
