@@ -16,7 +16,7 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
         exception.message.split(" /", 2)[0] === "Cannot HEAD" ||
         exception.message.split(" /", 2)[0] === "Cannot PATCH" ||
         exception.message.split(" /", 2)[0] === "Cannot DELETE"
-        ? `Noto'g'ri marshrut`
+        ? `route that does not exist`
         : exception.message
 
     response.status(status).send({
