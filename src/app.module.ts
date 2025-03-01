@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -7,8 +7,8 @@ import { EmailModule } from './modules/email/email.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { databaseConfig } from './configs/db.config';
-import { cacheManagerConfig, envConfig } from './configs';
+import { cacheManagerConfig, databaseConfig, envConfig, JwtConfig } from './configs';
+import { DomenMiddleware } from './common/middlewares/domen.middleware';
 
 
 
@@ -16,10 +16,7 @@ import { cacheManagerConfig, envConfig } from './configs';
   imports: [
     ConfigModule.forRoot(envConfig),
 
-    JwtModule.register({
-      global: true,
-      secret: process.env.SECRET_KEY
-    }),
+    JwtModule.registerAsync(JwtConfig),
 
     TypeOrmModule.forRootAsync(databaseConfig),
 
@@ -33,9 +30,17 @@ import { cacheManagerConfig, envConfig } from './configs';
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor
-    }
+      useClass: CacheInterceptor,
+    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: CustomCacheInterceptor
+    // }
   ],
-  exports: [CacheModule]
+  exports: [CacheModule, JwtModule]
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(DomenMiddleware).forRoutes("*")
+  }
+}
