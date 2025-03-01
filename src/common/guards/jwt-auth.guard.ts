@@ -3,6 +3,7 @@ import { JwtService } from "@nestjs/jwt"
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities';
 import { Repository } from 'typeorm';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -25,21 +26,26 @@ export class AuthGuard implements CanActivate {
 				throw new UnauthorizedException(`Missing Authentication Token`)
 			}
 
-			const token: string = authHeader.split(" ")[1]
+			let token: string = authHeader.split(" ")[1]
 			if (!token) throw new UnauthorizedException(`Missing Authentication Token`)
 
-			const decoded = await this.jwtService.verify(token, { secret: this.jwtSecretKey })
+			// AES ni deshiferlash
+			const bytes = CryptoJS.AES.decrypt(token, process.env.AES_KEY)
+			token = bytes.toString(CryptoJS.enc.Utf8)
 
+			const decoded = await this.jwtService.verify(token, { secret: this.jwtSecretKey, })
+			
 			const user: User = await this.userRepo.findOne({ where: { id: decoded?.sub } })
 			if (!user) throw new UnauthorizedException(`Ro'yxatdan o'tmagan user`)
 
 			request.user = user
 			return true
 		} catch (error: any) {
-			if (error.name === "JsonWebTokenError") throw new BadRequestException("Xato token")
+			if (error.name === "JsonWebTokenError") throw new UnauthorizedException("Xato token")
 
-			if (error.name === "TokenExpiredError") throw new BadRequestException("Token amal qilish mudвati tugagan")
-
+			if (error.name === "TokenExpiredError") throw new UnauthorizedException("Token amal qilish muddati tugagan")
+				console.log(error.name);
+				
 			throw error instanceof HttpException
 				? error
 				: new HttpException(error.message, HttpStatus.BAD_REQUEST);

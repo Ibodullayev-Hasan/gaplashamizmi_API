@@ -6,7 +6,9 @@ import { User } from 'src/entities';
 import { AuthModule } from '../auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
-import { cacheManagerConfig } from 'src/configs';
+import { cacheManagerConfig, JwtConfig } from 'src/configs';
+import { TokenGenerator } from 'src/common/helpers/token.generator';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { cacheManagerConfig } from 'src/configs';
     forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
-  providers: [UsersService],
-  exports: [UsersService, TypeOrmModule]
+  providers: [UsersService, TokenGenerator],
+  exports: [UsersService, TypeOrmModule, TokenGenerator]
 })
 export class UsersModule { }

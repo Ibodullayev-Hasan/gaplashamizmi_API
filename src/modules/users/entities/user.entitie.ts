@@ -14,9 +14,6 @@ export class User implements IUsers {
 	@Column({ type: "text", unique: true })
 	email: string;
 
-	// @Column({ type: "varchar", length: 13 })
-	// phone: string;
-
 	@Column({ type: "text" })
 	password: string;
 

@@ -1,29 +1,28 @@
-import { ConflictException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entities';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Like, Repository } from 'typeorm';
 import * as bcryptjs from "bcryptjs"
+import { TokenGenerator } from 'src/common/helpers/token.generator';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UsersService {
 
-  private accessTime: string
-  private jwtSecretKey: string
-
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private readonly jwtService: JwtService
-  ) {
-    this.accessTime = process.env.JWT_ACCESS_EXPIRES_TIME;
-    this.jwtSecretKey = process.env.SECRET_KEY;
-  }
+    private readonly tokenService: TokenGenerator,
+    @Inject('CACHE_MANAGER') private cache: Cache
+  ) { }
 
   // create user
-  async create(createUserDto: CreateUserDto): Promise<{ result: Omit<User, "password">, accToken: string }> {
+  async create(createUserDto: CreateUserDto): Promise<{
+    createdUser: Omit<User, "password">,
+    accToken: string,
+  }> {
     try {
       const user: User = await this.userRepo.findOne({ where: { email: createUserDto.email } })
 
@@ -39,14 +38,14 @@ export class UsersService {
         saved_messages: {}
       });
 
-      const savedUser = await this.userRepo.save(newUser);
+      const [savedUser, token] = await Promise.all([
+        this.userRepo.save(newUser),
+        this.tokenService.generator(newUser)
+      ])
 
-      const payload: object = { sub: savedUser.id, email: savedUser.email }
-      const accToken: string = this.jwtService.sign(payload, { secret: this.jwtSecretKey, expiresIn: this.accessTime })
+      const { password, ...createdUser } = savedUser
 
-      const { password, ...result } = savedUser
-
-      return { result, accToken }
+      return { createdUser, accToken: token.accToken }
     } catch (error: any) {
       throw error instanceof HttpException
         ? error
@@ -54,24 +53,53 @@ export class UsersService {
     }
   }
 
+  // find all
   async findAll(): Promise<User[]> {
-    const users = await this.userRepo.find({
-      relations: {
-        user_profile: true,
-        saved_messages: true
-      }
-    });
-    console.log(users.map((el) => {
-      delete el.password
-      return el
-    }));
-    console.log('sad');
-    
-    return users
+    try {
+      const users: User[] = await this.userRepo.find()
+
+      return users.map((user) => {
+        delete user.password
+        return user
+      })
+    } catch (error: any) {
+      throw error instanceof HttpException
+        ? error
+        : new HttpException(error.message, HttpStatus.BAD_REQUEST)
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  // async findByName(fullNameDto: Omit<FullNameEmailDto, "email">): Promise<Omit<User, "password">[]> {
+  async findByName(full_name: string): Promise<Omit<User, "password">[]> {
+    try {
+      const users = await this.userRepo.find({
+        where: { full_name: ILike(`%${full_name}%`) }
+      });
+
+      this.cache.reset()
+
+      return users.map(({ password, ...user }) => user);
+    } catch (error: any) {
+      throw error instanceof HttpException
+        ? error
+        : new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findByEmail(email: string): Promise<Omit<User, "password">[]> {
+    try {
+      const users = await this.userRepo.find({
+        where: { email: ILike(`%${email}%`) }
+      });
+
+      this.cache.reset()
+
+      return users.map(({ password, ...user }) => user);
+    } catch (error: any) {
+      throw error instanceof HttpException
+        ? error
+        : new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
