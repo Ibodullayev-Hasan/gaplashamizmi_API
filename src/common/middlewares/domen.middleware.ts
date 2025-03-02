@@ -12,7 +12,7 @@ export class DomenMiddleware implements NestMiddleware {
 		console.log(host);
 		console.log(req.ip);
 
-		if (!this.allowedDomains.includes(host) && this.allowedIp.includes(ipAdress)) {
+		if (!this.allowedDomains.includes(host) && !this.allowedIp.includes(ipAdress)) {
 			throw new ForbiddenException('Access denied');
 		}
 
