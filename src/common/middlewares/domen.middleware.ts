@@ -8,6 +8,7 @@ export class DomenMiddleware implements NestMiddleware {
 		const host = req.headers.host?.split(':')[0];
 		console.log(host);		
 		console.log(req.ip);		
+		console.log(req.ips);		
 		
 		if (!this.allowedDomains.includes(host)) {
 			throw new ForbiddenException('Access denied');
