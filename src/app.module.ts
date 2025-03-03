@@ -28,10 +28,10 @@ import { DomenMiddleware } from './common/middlewares/domen.middleware';
   ],
   controllers: [],
   providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: CacheInterceptor,
+    // },
     // {
     //   provide: APP_INTERCEPTOR,
     //   useClass: CustomCacheInterceptor
