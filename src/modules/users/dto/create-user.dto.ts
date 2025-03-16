@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { UserRole } from "src/enums/roles.enum";
 
 export class CreateUserDto {
 	@IsNotEmpty()
@@ -28,4 +29,10 @@ export class CreateUserDto {
 		message: `password kamida 1 ta katta harf, 1 ta kichik harf, 3 ta raqam va 1 ta belgi (@, #, $, !, & lardan biri) bo'lishi kerak`
 	})
 	password: string;
+
+	@IsOptional()
+	@IsEnum(UserRole, {
+		message:`role must be either ADMIN or USER`
+	})
+	role?:string
 }

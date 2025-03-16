@@ -7,7 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { cacheManagerConfig, JwtConfig } from 'src/configs';
-import { TokenGenerator } from 'src/common/helpers/token.generator';
+import { TokenGenerator } from 'src/common/services/token.generator';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({

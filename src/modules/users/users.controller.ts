@@ -1,46 +1,51 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { EmailGuard } from 'src/common/guards/verify-email.guard';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { UserRole } from 'src/enums/roles.enum';
+import { Request } from 'express';
 
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  // register
-  @Post()
-  @UseGuards(EmailGuard)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  // @UseGuards(AuthGuard)
   @Get()
+  @Roles(UserRole.ADMIN)
   findAll() {
     return this.usersService.findAll();
   }
 
-  // @UseGuards(AuthGuard)
+
   @Get('name/:full_name')
   findByName(@Param('full_name') full_name: string) {
     return this.usersService.findByName(full_name);
   }
 
-  // @UseGuards(AuthGuard)
+
   @Get('email/:email')
   findByEmail(@Param('email') email: string) {
     return this.usersService.findByEmail(email);
   }
 
-  @UseGuards(AuthGuard)
+
+  @Get('profile')
+  @Roles(UserRole.USER)
+  getProfile(@Req() req: Request) {
+    const user = req?.user
+    delete user.password
+    return user
+  }
+
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
 
-  @UseGuards(AuthGuard)
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);

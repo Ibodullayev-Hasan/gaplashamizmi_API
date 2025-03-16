@@ -9,7 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { cacheManagerConfig, databaseConfig, envConfig, JwtConfig } from './configs';
 import { DomenMiddleware } from './common/middlewares/domen.middleware';
-
+import { GlobalResponseFormatterInterceptor } from './common/interceptors/response-formatter.interceptor';
 
 
 @Module({
@@ -36,6 +36,10 @@ import { DomenMiddleware } from './common/middlewares/domen.middleware';
     //   provide: APP_INTERCEPTOR,
     //   useClass: CustomCacheInterceptor
     // }
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: GlobalResponseFormatterInterceptor
+    }
   ],
   exports: [CacheModule, JwtModule]
 })

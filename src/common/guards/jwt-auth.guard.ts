@@ -34,18 +34,17 @@ export class AuthGuard implements CanActivate {
 			token = bytes.toString(CryptoJS.enc.Utf8)
 
 			const decoded = await this.jwtService.verify(token, { secret: this.jwtSecretKey, })
-			
+
 			const user: User = await this.userRepo.findOne({ where: { id: decoded?.sub } })
 			if (!user) throw new UnauthorizedException(`Ro'yxatdan o'tmagan user`)
 
 			request.user = user
 			return true
 		} catch (error: any) {
-			if (error.name === "JsonWebTokenError") throw new UnauthorizedException("Xato token")
+			if (error.name === "JsonWebTokenError" || error.message === "Malformed UTF-8 data") throw new UnauthorizedException("Xato token")
 
 			if (error.name === "TokenExpiredError") throw new UnauthorizedException("Token amal qilish muddati tugagan")
-				console.log(error.name);
-				
+
 			throw error instanceof HttpException
 				? error
 				: new HttpException(error.message, HttpStatus.BAD_REQUEST);

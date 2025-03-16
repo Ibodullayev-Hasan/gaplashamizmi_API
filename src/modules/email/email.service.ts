@@ -30,7 +30,25 @@ export class EmailService {
 					to: email,
 					subject: 'Tasdiqlash Kodi (no-reply)',
 					text: `Sizning tasdiqlash kodingiz: ${code}`,
-					html: `<p><b>${code}</b> - bu sizning tasdiqlash kodingiz, iltimos uni so'ralgan joyga kiriting! 😊</p>`,
+					html: `<div style="
+                          font-family: Arial, sans-serif;
+                           background-color: #f4f4f4;
+                          padding: 20px;
+                          text-align: center;
+                          border-radius: 8px;
+                          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                          max-width: 400px;
+                          margin: auto;
+                      ">
+                          <h2 style="color: #4CAF50; margin-bottom: 10px;">Tasdiqlash Kodingiz</h2>
+                          <p style="color: #333; font-size: 16px;">
+                              <b style="font-size: 22px; color: #e91e63;">${code}</b>
+                          </p>
+                          <p style="color: #555; font-size: 14px;">
+                              Ushbu kodni kerakli joyga kiriting va emailingizni tasdiqlang! 😊
+                          </p>
+                      </div>
+                            `,
 				})
 
 			])

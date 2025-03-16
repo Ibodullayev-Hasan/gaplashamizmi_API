@@ -16,7 +16,7 @@ export class UserProfile implements Partial<IUserProfile> {
 	@Column({ type: "varchar", default: "skyblue" })
 	chat_back_color?: string;
 
-	@Column({ type: "text", default: "https://example.com/test-image" })
+	@Column({ type: "text", default: "https://wallpapers.com/images/hd/dark-city-background-ympe22eapcw8su8e.jpg" })
 	chat_back_img?: string;
 
 	@Column({ type: "varchar", length: 15, default: chatLanguage.UZB })
