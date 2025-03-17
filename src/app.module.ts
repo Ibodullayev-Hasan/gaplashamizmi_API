@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { cacheManagerConfig, databaseConfig, envConfig, JwtConfig } from './configs';
 import { DomenMiddleware } from './common/middlewares/domen.middleware';
 import { GlobalResponseFormatterInterceptor } from './common/interceptors/response-formatter.interceptor';
+import { ChatModule } from './modules/chat/chat.module';
 
 
 @Module({
@@ -24,7 +25,8 @@ import { GlobalResponseFormatterInterceptor } from './common/interceptors/respon
 
     UsersModule,
     AuthModule,
-    EmailModule
+    EmailModule,
+    ChatModule
   ],
   controllers: [],
   providers: [

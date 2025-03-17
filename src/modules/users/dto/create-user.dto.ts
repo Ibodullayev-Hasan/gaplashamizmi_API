@@ -32,7 +32,8 @@ export class CreateUserDto {
 
 	@IsOptional()
 	@IsEnum(UserRole, {
-		message:`role must be either ADMIN or USER`
+		message: `role must be either ADMIN or USER`
 	})
-	role?:string
+	role?: string
+
 }

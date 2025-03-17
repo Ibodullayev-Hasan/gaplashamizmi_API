@@ -6,6 +6,7 @@ import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { UserRole } from 'src/enums/roles.enum';
 import { Request } from 'express';
+import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('users')
@@ -38,11 +39,19 @@ export class UsersController {
     delete user.password
     return user
   }
-
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  
+  
+  @Patch()
+  @Roles(UserRole.USER)
+  update(@Body() updateUserDto: UpdateUserDto, @Req() req: Request) {
+    const id = req?.user.id
+    return this.usersService.update(id, updateUserDto);
+  }
+  
+  @Patch('user-profile')
+  @Roles(UserRole.USER)
+  updateUserProfile(@Body() updateUserProfileDto: UpdateUserProfileDto, @Req() req: Request) {
+    return this.usersService.updateUserProfile(req?.user, updateUserProfileDto);
   }
 
 

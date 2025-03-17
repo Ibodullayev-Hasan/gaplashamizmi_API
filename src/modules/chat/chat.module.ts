@@ -5,4 +5,4 @@ import { ChatGateway } from './chat.gateway';
 @Module({
   providers: [ChatGateway, ChatService],
 })
-export class ChatModule {}
+export class ChatModule { }

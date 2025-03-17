@@ -5,7 +5,6 @@ export interface IUserProfile {
 	chat_theme: chatTheme
 	chat_font: chatFont
 	chat_back_img: string
-	chat_back_color: string
 	chat_lang: chatLanguage
 	user_id:string
 }

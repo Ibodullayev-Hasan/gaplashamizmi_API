@@ -1,34 +1,27 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody } from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
-import { CreateChatDto } from './dto/create-chat.dto';
-import { UpdateChatDto } from './dto/update-chat.dto';
+import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway()
-export class ChatGateway {
-  constructor(private readonly chatService: ChatService) {}
+@WebSocketGateway({ namespace: '/chat', cors: { origin: true } })
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
-  @SubscribeMessage('createChat')
-  create(@MessageBody() createChatDto: CreateChatDto) {
-    return this.chatService.create(createChatDto);
+  constructor(private readonly chatService: ChatService) { }
+
+  @WebSocketServer() server: Server;
+
+  handleConnection(client: Socket, ...args: any[]) {
+    console.log(`Client connected: ${client.id}`);
+    client.emit("connection", "success connected");
   }
 
-  @SubscribeMessage('findAllChat')
-  findAll() {
-    return this.chatService.findAll();
+  handleDisconnect(client: Socket) {
+    client.emit("disconnection", "success disconnected");
+    console.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('findOneChat')
-  findOne(@MessageBody() id: number) {
-    return this.chatService.findOne(id);
-  }
-
-  @SubscribeMessage('updateChat')
-  update(@MessageBody() updateChatDto: UpdateChatDto) {
-    return this.chatService.update(updateChatDto.id, updateChatDto);
-  }
-
-  @SubscribeMessage('removeChat')
-  remove(@MessageBody() id: number) {
-    return this.chatService.remove(id);
+  @SubscribeMessage('sendMessage')
+  handleMessage(client: Socket, message: any): void {
+    console.log('Yangi xabar:', message);
+    client.emit("reply", `U2FsdGVkX1/dnQNjavfTP0TAHSf27RXwDVJp9Qyixd4aK42cAE29HzIPzdNP/bxB0JpHsJD4rhtyOXkldzMcYAvQfBWmcgfBrOooAoAt+Q3WDMqeS1oZqdWcuDSeZy+kJMk9c6V+jLCnWweTAMTOV0wO/rqSFC7cgplJT0goEjMuv4zcmpi1QUrQmU6trcrbs9Qkxl6IsL0V7tSfVwjhBbVG9+seTU1FOGn2BGQ1R5gKN8XJDYtyM0567L+gcDU1l`);
   }
 }
