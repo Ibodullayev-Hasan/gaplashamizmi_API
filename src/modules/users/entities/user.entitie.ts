@@ -1,8 +1,10 @@
 import { IUsers } from "src/interfaces/users.interface";
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { UserProfile } from "./user-profiles.entitie";
 import { SavedMessages } from "./saved-messages.entitie";
-import { Role } from "src/enums/role.enum";
+import { Chat } from "src/modules/chat/entities/chat.entity";
+import { Message } from "src/modules/chat/entities/message.entity";
+import { UserRole } from "src/enums/roles.enum";
 
 @Entity({ name: "users" })
 export class User implements IUsers {
@@ -21,7 +23,7 @@ export class User implements IUsers {
 	@Column({ type: "text" })
 	password: string;
 
-	@Column({ type: "text", default: Role.USER })
+	@Column({ type: "text", default: UserRole.USER })
 	role?: string;
 
 	@Column({ type: "boolean", default: true })
@@ -40,4 +42,8 @@ export class User implements IUsers {
 	@OneToOne(() => SavedMessages, { cascade: true, eager: true })
 	@JoinColumn()
 	saved_messages?: SavedMessages;
+
+	@OneToMany(() => Message, (message) => message.senderId)
+	messages: Message[];
+
 }
