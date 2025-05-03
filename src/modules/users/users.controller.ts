@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guards/role.guard';
-import { Roles } from 'src/decorators/roles.decorator';
-import { UserRole } from 'src/enums/roles.enum';
+import { AuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/role.guard';
+import { Roles } from '../../decorators/roles.decorator';
+import { UserRole } from '../../enums/roles.enum';
 import { Request } from 'express';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 

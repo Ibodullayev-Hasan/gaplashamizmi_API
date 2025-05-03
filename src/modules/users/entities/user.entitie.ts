@@ -1,10 +1,9 @@
-import { IUsers } from "src/interfaces/users.interface";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { IUsers } from "../../../interfaces/users.interface";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { UserProfile } from "./user-profiles.entitie";
 import { SavedMessages } from "./saved-messages.entitie";
-import { Chat } from "src/modules/chat/entities/chat.entity";
-import { Message } from "src/modules/chat/entities/message.entity";
-import { UserRole } from "src/enums/roles.enum";
+import { Message } from "../../../modules/chat/entities/message.entity";
+import { UserRole } from "../../../enums/roles.enum";
 
 @Entity({ name: "users" })
 export class User implements IUsers {

@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as nodemailer from "nodemailer";
 import { EmailController } from './email.controller';
 import { CacheModule } from '@nestjs/cache-manager';
-import { cacheManagerConfig } from 'src/configs';
+import { cacheManagerConfig } from '../../configs';
 
 @Module({
   imports: [

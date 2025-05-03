@@ -1,4 +1,4 @@
-import { ISavedMessages } from "src/interfaces/saved-messages.interface";
+import { ISavedMessages } from "../../../interfaces/saved-messages.interface";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity("savedMessages")

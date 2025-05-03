@@ -1,6 +1,6 @@
-import { IUserProfile } from "src/interfaces/user-profile.interface";
+import { IUserProfile } from "../../../interfaces/user-profile.interface";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { chatFont, chatLanguage, chatTheme } from "src/enums/chat.enum";
+import { chatFont, chatLanguage, chatTheme } from "../../../enums/chat.enum";
 
 @Entity({ name: "userProfile" })
 export class UserProfile implements Partial<IUserProfile> {

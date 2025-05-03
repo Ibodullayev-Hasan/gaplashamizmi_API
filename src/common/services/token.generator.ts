@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { User } from "src/entities";
+import { User } from "../../entities";
 import * as CryptoJS from 'crypto-js';
 
 @Injectable()

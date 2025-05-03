@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, CreateDateColumn } from 'typeorm';
 import { Chat } from './chat.entity';
-import { User } from 'src/entities';
-import { MessageType } from 'src/enums/message-type.enum';
+import { User } from '../../../entities';
+import { MessageType } from '../../../enums/message-type.enum';
 
 
 @Entity({ name: 'messages' })

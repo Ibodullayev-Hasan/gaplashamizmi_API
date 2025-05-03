@@ -1,4 +1,3 @@
-import { User } from 'src/entities';
 import { Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany, Column, CreateDateColumn } from 'typeorm';
 import { Message } from './message.entity';
 

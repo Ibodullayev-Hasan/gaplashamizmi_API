@@ -1,4 +1,4 @@
-import { chatFont, chatLanguage, chatTheme } from "src/enums/chat.enum";
+import { chatFont, chatLanguage, chatTheme } from "../enums/chat.enum";
 
 export interface IUserProfile {
 	id: string

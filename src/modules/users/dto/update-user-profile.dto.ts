@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsUrl, Matches } from "class-validator"
-import { chatFont, chatLanguage, chatTheme } from "src/enums/chat.enum"
+import { chatFont, chatLanguage, chatTheme } from "../../../enums/chat.enum"
 
 export class UpdateUserProfileDto {
 
