@@ -45,13 +45,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('register')
   handleRegister(@MessageBody() userId: string, @ConnectedSocket() client: Socket) {
     if (this.activeUsers.has(userId)) {
-      return; 
+      return;   
     }
 
     this.activeUsers.set(userId, client.id); // Userni qo‘shamiz
     client.join(userId); // Uni faqat bir marta qo‘shamiz
     console.log(`User ${userId} joined room.`);
   }
-
 
 }
