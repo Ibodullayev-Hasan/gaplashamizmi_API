@@ -2,7 +2,7 @@ import { ForbiddenException, NestMiddleware } from "@nestjs/common";
 import { Request, Response } from "express";
 
 export class DomenMiddleware implements NestMiddleware {
-	private readonly allowedDomains = ['localhost', 'gaplashamizmi-api.up.railway.app'];
+	private readonly allowedDomains = ['localhost', 'gaplashamizmi-api.onrender.com'];
 	private readonly allowedIp = ['100.64.0.2'];
 
 	use(req: Request, res: Response, next: (error?: Error | any) => void) {
