@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/role.guard';
 import { Roles } from '../../decorators/roles.decorator';
 import { UserRole } from '../../enums/roles.enum';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 
 @UseGuards(AuthGuard, RolesGuard)
@@ -34,20 +34,21 @@ export class UsersController {
 
   @Get('profile')
   @Roles(UserRole.USER)
-  getProfile(@Req() req: Request) {
+  getProfile(@Req() req: Request, @Res() res: Response) {
     const user = req?.user
     delete user.password
-    return user
+
+    res.status(200).json({ sucsess: true, message: 'Successfull get user profile', data: user })
   }
-  
-  
+
+
   @Patch()
   @Roles(UserRole.USER)
   update(@Body() updateUserDto: UpdateUserDto, @Req() req: Request) {
     const id = req?.user.id
     return this.usersService.update(id, updateUserDto);
   }
-  
+
   @Patch('user-profile')
   @Roles(UserRole.USER)
   updateUserProfile(@Body() updateUserProfileDto: UpdateUserProfileDto, @Req() req: Request) {

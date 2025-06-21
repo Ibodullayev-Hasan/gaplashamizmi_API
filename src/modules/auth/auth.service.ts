@@ -44,7 +44,7 @@ export class AuthService {
 
 			const { password, ...result } = savedUser
 
-			return { user:result, accToken: token.accToken }
+			return { user: result, accToken: token.accToken }
 		} catch (error: any) {
 			throw error instanceof HttpException
 				? error
@@ -54,7 +54,7 @@ export class AuthService {
 
 
 	// login user
-	async login(loginDto: LoginDto) {
+	async login(loginDto: LoginDto): Promise<{ accToken: string, refToken: string }> {
 		try {
 			const user = await this.userRepo.findOne({ where: { email: loginDto.email } });
 			if (!user) throw new UnauthorizedException('Unauthorized user');
