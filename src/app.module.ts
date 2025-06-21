@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { CacheModule } from "@nestjs/cache-manager"
 import { EmailModule } from './modules/email/email.module';
 import { ConfigModule } from '@nestjs/config';
@@ -39,7 +39,7 @@ import { ChatModule } from './modules/chat/chat.module';
     //   useClass: CustomCacheInterceptor
     // }
     {
-      provide: APP_INTERCEPTOR,
+      provide: APP_FILTER,
       useClass: GlobalResponseFormatterInterceptor
     }
   ],

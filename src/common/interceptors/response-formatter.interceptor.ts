@@ -1,43 +1,47 @@
-import { CallHandler, ExecutionContext, HttpException, HttpStatus, NestInterceptor } from "@nestjs/common";
-import { Observable, throwError, catchError } from "rxjs";
-import { map } from "rxjs/operators";
+// src/common/filters/all-exceptions.filter.ts
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
 
-export class GlobalResponseFormatterInterceptor implements NestInterceptor {
-	intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
+@Catch()
+export class GlobalResponseFormatterInterceptor implements ExceptionFilter {
+  private readonly logger = new Logger(GlobalResponseFormatterInterceptor.name);
 
-		return next.handle().pipe(
-			map((data) => ({
-				success: true,
-				data,
-				message: "Request successful"
-			})),
+  catch(exception: unknown, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
 
-			catchError((error) => {
-				if (error instanceof HttpException) {
-					const response = error.getResponse();
+    const isHttp = exception instanceof HttpException;
 
-					return throwError(() =>
-						new HttpException(
-							{
-								success: false,
-								error: response,
-							},
-							error.getStatus()
-						))
-				}
+    const status = isHttp
+      ? exception.getStatus()
+      : HttpStatus.INTERNAL_SERVER_ERROR;
 
-				return throwError(() =>
-					new HttpException(
-						{
-							success: false,
-							error: error.message || "Internal Server Error"
-						},
-						HttpStatus.INTERNAL_SERVER_ERROR
-					)
-				);
-			})
+    const message = isHttp
+      ? exception.getResponse()
+      : (exception as any)?.message || 'Internal server error';
 
+    const stack = (exception as any)?.stack;
 
-		)
-	}
+    const errorResponse = {
+      success: false,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+      method: request.method,
+      message,
+      stack: process.env.NODE_ENV !== 'production' ? stack : undefined, // Only in dev
+    };
+
+    // Terminalga to'liq log
+    this.logger.error(`[${request.method}] ${request.url}`, stack);
+
+    response.status(status).json(errorResponse);
+  }
 }

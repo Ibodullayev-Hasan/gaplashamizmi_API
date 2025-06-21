@@ -9,6 +9,7 @@ import { TokenGenerator } from '../../common/services/token.generator';
     forwardRef(() => UsersModule)
   ],
   controllers: [AuthController],
-  providers: [AuthService, TokenGenerator]
+  providers: [AuthService, TokenGenerator],
+  exports:[AuthService]
 })
 export class AuthModule { }

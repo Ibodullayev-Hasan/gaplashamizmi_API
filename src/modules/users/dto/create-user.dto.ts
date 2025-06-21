@@ -4,10 +4,11 @@ import { UserRole } from "../../../enums/roles.enum";
 export class CreateUserDto {
 	@IsNotEmpty()
 	@IsString()
-	@Matches(/^(?!\s+$)[A-Za-z1-9._\p{Emoji_Presentation}\p{Emoji}\p{Extended_Pictographic}]+$/u, {
+	@Matches(/^(?!\s*$)[A-Za-z0-9._\p{Emoji_Presentation}\p{Emoji}\p{Extended_Pictographic} ]+$/u, {
 		message:
-			"full_name faqat harflar (A-Z, a-z), raqamlar (1-9), nuqta (.), pastki chiziq (_), va emojilardan iborat bo‘lishi mumkin. Bo‘sh bo‘lishi mumkin emas!"
+			"full_name faqat harflar (A-Z, a-z), raqamlar (0-9), nuqta (.), pastki chiziq (_), bo‘sh joy ( ), va emojilardan iborat bo‘lishi mumkin. Bo‘sh bo‘lishi mumkin emas!"
 	})
+
 	@MaxLength(100, {
 		message: "full_name 100 ta belgidan oshmasligi kerak",
 	})

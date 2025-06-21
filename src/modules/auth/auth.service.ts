@@ -17,9 +17,9 @@ export class AuthService {
 
 	) { }
 
-	// create user
+	// register
 	async create(createUserDto: CreateUserDto): Promise<{
-		createdUser: Omit<User, "password">,
+		user: Omit<User, "password">,
 		accToken: string,
 	}> {
 		try {
@@ -42,9 +42,9 @@ export class AuthService {
 				this.tokenService.generator(newUser)
 			])
 
-			const { password, ...createdUser } = savedUser
+			const { password, ...result } = savedUser
 
-			return { createdUser, accToken: token.accToken }
+			return { user:result, accToken: token.accToken }
 		} catch (error: any) {
 			throw error instanceof HttpException
 				? error
