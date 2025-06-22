@@ -40,18 +40,11 @@ export class TokenGenerator {
 			const encryptedAccToken = CryptoJS.AES.encrypt(accToken, this.aesKey).toString();
 			const encryptedRefToken = CryptoJS.AES.encrypt(refToken, this.aesKey).toString();
 
-			// vaqt qo'shish
-			const accessDate = new Date();
-			accessDate.setMinutes(accessDate.getMinutes() + Number(this.accessTime.split("")[0]));
-
-			const refreshDate = new Date();
-			refreshDate.setDate(refreshDate.getDate() + Number(this.refreshTime.split("")[0]));
-
 			return {
 				accToken: encryptedAccToken,
-				accessExpiresIn: accessDate.toLocaleString(), // ISO formatda saqlash yaxshiroq
+				accessExpiresIn: this.accessTime,
 				refToken: encryptedRefToken,
-				refreshExpiresIn: refreshDate.toLocaleString()
+				refreshExpiresIn: this.refreshTime
 			};
 		} catch (error: any) {
 			throw error instanceof HttpException
