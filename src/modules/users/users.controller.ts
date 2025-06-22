@@ -21,8 +21,12 @@ export class UsersController {
 
 
   @Get('name/:full_name')
-  findByName(@Param('full_name') full_name: string) {
-    return this.usersService.findByName(full_name);
+  async findByName(@Param('full_name') full_name: string, @Res() res: Response) {
+
+    const user = await this.usersService.findByName(full_name)
+
+    res.status(200).json({ sucsess: true, message: 'Successfull get user profile', data: user })
+
   }
 
 
