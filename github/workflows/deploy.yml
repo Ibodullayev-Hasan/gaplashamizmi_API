@@ -20,7 +20,7 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             cd ${{ secrets.PROJECT_PATH }}
-            git pull origin main
+            git pull origin master
             npm install
             npm run build
             pm2 restart all
