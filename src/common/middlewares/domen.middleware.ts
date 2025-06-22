@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 
 export class DomenMiddleware implements NestMiddleware {
 	private readonly allowedDomains = ['localhost', 'gaplashamizmi-api.onrender.com', 'ibodullayevhasan.uz'];
-	private readonly allowedIp = ['68.183.181.222'];
+	private readonly allowedIp = ['127.0.0.1'];
 
 	use(req: Request, res: Response, next: (error?: Error | any) => void) {
 		const host = req.headers.host?.split(':')[0] || '';
