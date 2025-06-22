@@ -11,8 +11,10 @@ export class AuthController {
 	constructor(private readonly authService: AuthService) { }
 
 	@Post('sign-up')
-	async signUp(@Body() createUserDto: CreateUserDto) {
-		return this.authService.create(createUserDto)
+	async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+		const data: object = await this.authService.create(createUserDto)
+
+		res.status(200).json({ sucsess: true, message: 'Successfull login', data })
 	}
 
 	@Post('login')
@@ -20,14 +22,16 @@ export class AuthController {
 	async login(@Body() loginDto: LoginDto, @Res() res: Response) {
 		const data: object = await this.authService.login(loginDto)
 
-		res.status(200).json({ sucsess: true, message: 'Successfull login', data })
+		res.status(200).json({ success: true, message: 'Successfull login', data })
 	}
 
 	@Post('refresh')
 	@UseGuards(AuthGuard)
-	async refreshToken(@Req() req: Request) {
-		const user = req.user
-		return this.authService.refreshToken(user)
+	async refreshToken(@Req() req: Request, @Res() res: Response) {
+
+		const data: object = await this.authService.refreshToken(req?.user)
+
+		res.status(200).json({ success: true, message: 'Token refresh', data })
 	}
 
 }
