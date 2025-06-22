@@ -22,7 +22,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (userId) {
       this.activeUsers.delete(userId);
-      console.log(`User ${userId} disconnected.`);
+
     }
   }
 
@@ -50,7 +50,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     this.activeUsers.set(userId, client.id); // Userni qo‘shamiz
     client.join(userId); // Uni faqat bir marta qo‘shamiz
-    console.log(`User ${userId} joined room.`);
+
   }
 
 }

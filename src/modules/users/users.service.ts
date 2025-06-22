@@ -40,8 +40,6 @@ export class UsersService {
         where: { full_name: ILike(`%${full_name}%`) }
       });
 
-      // this.cache.reset()
-
       return users.map(({ password, role, ...user }) => user);
     } catch (error: any) {
       throw error instanceof HttpException

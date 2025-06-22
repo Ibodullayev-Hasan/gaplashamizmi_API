@@ -25,10 +25,8 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     const cleanedPath = request.path.replace(/^\/api\/v1/, '');
-    console.log(cleanedPath);
     
     const allowedMethods = allowedRoutes[cleanedPath];
-    console.log(allowedMethods);
 
     if (!allowedMethods) {
       response.status(HttpStatus.NOT_FOUND).json({

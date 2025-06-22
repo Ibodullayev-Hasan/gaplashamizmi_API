@@ -25,7 +25,7 @@ export class UsersController {
 
     const user = await this.usersService.findByName(full_name)
 
-    res.status(200).json({ sucsess: true, message: 'Successfull get user profile', data: user })
+    res.status(200).json({ success: true, message: 'Successfull get user profile', data: user })
 
   }
 
@@ -42,7 +42,7 @@ export class UsersController {
     const user = req?.user
     delete user.password
 
-    res.status(200).json({ sucsess: true, message: 'Successfull get user profile', data: user })
+    res.status(200).json({ success: true, message: 'Successfull get user profile', data: user })
   }
 
 
