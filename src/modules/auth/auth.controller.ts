@@ -14,7 +14,7 @@ export class AuthController {
 	async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
 		const data: object = await this.authService.create(createUserDto)
 
-		res.status(200).json({ sucsess: true, message: 'Successfull login', data })
+		res.status(201).json({ sucsess: true, message: 'Successfull register', data })
 	}
 
 	@Post('login')

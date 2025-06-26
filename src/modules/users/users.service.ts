@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SavedMessages, User, UserProfile } from '../../entities';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -34,52 +34,42 @@ export class UsersService {
     }
   }
 
+  // find by name
   async findByName(full_name: string): Promise<Omit<User, "password">[]> {
     try {
       const users = await this.userRepo.find({
-        where: { full_name: ILike(`%${full_name}%`) }
+        where: { full_name: ILike(`%${full_name.trim()}%`) }
       });
-
-      return users.map(({ password, role, ...user }) => user);
-    } catch (error: any) {
-      throw error instanceof HttpException
+      
+      if (users.length === 0) {
+        console.log('salom');
+        throw new NotFoundException("Not found user")
+        
+      }
+        
+        return users.map(({ password, role, ...user }) => user)
+      } catch (error: any) {
+        throw error instanceof HttpException
         ? error
         : new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
     }
-  }
-
-
+    
+    
+    // find by email
   async findByEmail(email: string): Promise<Omit<User, "password">[]> {
     try {
       const users = await this.userRepo.find({
         where: { email: ILike(`%${email}%`) }
       });
 
-      // this.cache.reset()
-
       return users.map(({ password, role, ...user }) => user);
     } catch (error: any) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
-  // user data
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    try {
-
-      if (!Object.keys(updateUserDto).length) {
-        throw new BadRequestException(`Yangilash uchun biror maydon kiritish zarur`);
-      }
-
-      const { affected } = await this.userRepo.update(id, updateUserDto)
-
-      return affected && affected > 0 ? 'Muvaffaqiyatli yangilandi' : 'Yangilash amalga oshmadi'
-    } catch (error: any) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  // user profile data
+  // update user profile 
   async updateUserProfile(user: User, updateUserProfileDto: UpdateUserProfileDto) {
     try {
 

@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Length, Matches, MaxLength, MinLength } from "class-validator";
 import { UserRole } from "../../../enums/roles.enum";
 
 export class CreateUserDto {
@@ -6,28 +6,23 @@ export class CreateUserDto {
 	@IsString()
 	@Matches(/^(?!\s*$)[A-Za-z0-9._\p{Emoji_Presentation}\p{Emoji}\p{Extended_Pictographic} ]+$/u, {
 		message:
-			"full_name faqat harflar (A-Z, a-z), raqamlar (0-9), nuqta (.), pastki chiziq (_), bo‘sh joy ( ), va emojilardan iborat bo‘lishi mumkin. Bo‘sh bo‘lishi mumkin emas!"
+			"full_name faqat harflar (A-Z, a-z), raqamlar (0-9), nuqta (.), pastki chiziq (_), bo‘sh joy ( ), va emojilardan iborat bo‘lishi mumkin!"
 	})
 
-	@MaxLength(100, {
-		message: "full_name 100 ta belgidan oshmasligi kerak",
+	@MaxLength(50, {
+		message: "full_name 50 ta belgidan oshmasligi kerak",
 	})
 	full_name: string;
 
 	@IsNotEmpty()
-	@IsEmail()
+	@IsEmail({},{message:"emailni tog'ri kiriting! user@example.com"})
 	email: string
 
 	@IsNotEmpty()
 	@IsString()
-	@MinLength(6, {
-		message: `Minimum 6 ta belgi bo'lsin`
-	})
-	@MaxLength(8, {
-		message: `Maksimum 8 ta belgi bo'lishi mumkin`
-	})
-	@Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=(?:.*\d){3,})(?=.*[@#$!&])[A-Za-z\d@#$!&]{6,8}$/, {
-		message: `password kamida 1 ta katta harf, 1 ta kichik harf, 3 ta raqam va 1 ta belgi (@, #, $, !, & lardan biri) bo'lishi kerak`
+	@Length(6, 12, { message: "parol min-6, max-12 bolishi mumkin" })
+	@Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=(?:.*\d){4,})[A-Za-z\d@#$!&]{6,12}$/, {
+		message: `parol kamida 1 ta katta harf, 1 ta kichik harf, 4 ta raqam bo'lishi kerak! A1234a`
 	})
 	password: string;
 

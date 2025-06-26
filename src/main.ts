@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { HttpException, HttpStatus, Logger, VersioningType } from '@nestjs/common';
+import { HttpException, HttpStatus, Logger, NotFoundException, VersioningType } from '@nestjs/common';
 import { corsConfig, setupGlobalPipes, setUpswagger } from './configs';
 import { NotFoundExceptionFilter } from './common/filters/http-exception.filter';
 import { IoAdapter } from '@nestjs/platform-socket.io';
@@ -26,7 +26,6 @@ async function bootstrap() {
     setUpswagger(app);
     setupGlobalPipes(app);
 
-    app.useGlobalFilters(new NotFoundExceptionFilter());
 
     // NestJS HTTP serverini olish
     const httpServer = app.getHttpServer();
@@ -34,9 +33,11 @@ async function bootstrap() {
     // WebSocket uchun adapter o‘rnatish
     app.useWebSocketAdapter(new IoAdapter(httpServer));
 
+    app.useGlobalFilters(new NotFoundExceptionFilter());
+
     // HTTP va WebSocket bitta portda ishlaydi
     await app.listen(port);
-    logger.log(`🚀 Application is running on: http://localhost:${port}`);
+    logger.log(`Server run on port:${port} 🚀`);
   } catch (error: any) {
     logger.error(error.message)
   }

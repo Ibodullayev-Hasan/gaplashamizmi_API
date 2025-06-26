@@ -21,15 +21,18 @@ export class AuthService {
 	async create(createUserDto: CreateUserDto): Promise<{
 		user: Omit<User, "password">,
 		accToken: string,
+		refToken: string,
 	}> {
 		try {
-			const user: User = await this.userRepo.findOne({ where: { email: createUserDto.email } })
 
-			if (user) throw new ConflictException(`already existing user`)
+			const [user, hashedPassword] = await Promise.all([
+				this.userRepo.findOne({ where: { email: createUserDto.email } }),
+				bcryptjs.hash(createUserDto.password, 10)
+			])
 
-			const hashedPass = await bcryptjs.hash(createUserDto.password, 10)
+			if (user) throw new ConflictException(`Bu email oldin ro'yxatdan o'tgan!`)
 
-			createUserDto.password = hashedPass
+			createUserDto.password = hashedPassword
 
 			const newUser = this.userRepo.create({
 				...createUserDto,
@@ -37,14 +40,12 @@ export class AuthService {
 				saved_messages: {}
 			});
 
-			const [savedUser, token] = await Promise.all([
-				this.userRepo.save(newUser),
-				this.tokenService.generator(newUser)
-			])
+			const savedUser = await this.userRepo.save(newUser);
+			const tokens = await this.tokenService.generator(savedUser);
 
-			const { password, ...result } = savedUser
+			const { password, ...result } = savedUser;
 
-			return { user: result, accToken: token.accToken }
+			return { user: result, accToken: tokens.accToken, refToken: tokens.refToken }
 		} catch (error: any) {
 			throw error instanceof HttpException
 				? error
@@ -57,10 +58,10 @@ export class AuthService {
 	async login(loginDto: LoginDto): Promise<{ accToken: string, refToken: string }> {
 		try {
 			const user = await this.userRepo.findOne({ where: { email: loginDto.email } });
-			if (!user) throw new UnauthorizedException('Unauthorized user');
+			if (!user) throw new UnauthorizedException(`Ro'yxatdan o'tmagan email!`);
 
 			const comparedPass = await bcryptjs.compare(loginDto.password, user.password);
-			if (!comparedPass) throw new HttpException('Invalid password', HttpStatus.FORBIDDEN);
+			if (!comparedPass) throw new UnauthorizedException('Invalid password');
 
 			return this.tokenService.generator(user)
 		} catch (error: any) {

@@ -7,11 +7,13 @@ import { EmailModule } from './modules/email/email.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { cacheManagerConfig, databaseConfig, envConfig, JwtConfig } from './configs';
+import { cacheManagerConfig, envConfig, JwtConfig } from './configs';
 import { DomenMiddleware } from './common/middlewares/domen.middleware';
 import { GlobalResponseFormatterInterceptor } from './common/interceptors/response-formatter.interceptor';
 import { ChatModule } from './modules/chat/chat.module';
 
+import dbConfigDev from './configs/db.config';
+import dbConfigProd from './configs/db.config.pro';
 
 @Module({
   imports: [
@@ -19,7 +21,9 @@ import { ChatModule } from './modules/chat/chat.module';
 
     JwtModule.registerAsync(JwtConfig),
 
-    TypeOrmModule.forRootAsync(databaseConfig),
+    TypeOrmModule.forRootAsync({
+      useFactory: async () => process.env.NODE_ENV === 'production' ? dbConfigProd() : dbConfigDev()
+    }),
 
     CacheModule.registerAsync(cacheManagerConfig),
 
@@ -30,14 +34,6 @@ import { ChatModule } from './modules/chat/chat.module';
   ],
   controllers: [],
   providers: [
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: CacheInterceptor,
-    // },
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: CustomCacheInterceptor
-    // }
     {
       provide: APP_FILTER,
       useClass: GlobalResponseFormatterInterceptor

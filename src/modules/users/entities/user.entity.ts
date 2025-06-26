@@ -1,7 +1,7 @@
 import { IUsers } from "../../../interfaces/users.interface";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { UserProfile } from "./user-profiles.entitie";
-import { SavedMessages } from "./saved-messages.entitie";
+import { UserProfile } from "./user-profiles.entity";
+import { SavedMessages } from "./saved-messages.entity";
 import { Message } from "../../../modules/chat/entities/message.entity";
 import { UserRole } from "../../../enums/roles.enum";
 

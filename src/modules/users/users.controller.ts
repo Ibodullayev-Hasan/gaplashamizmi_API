@@ -1,6 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res, NotFoundException, HttpCode, HttpStatus } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/role.guard';
 import { Roles } from '../../decorators/roles.decorator';
@@ -21,12 +20,16 @@ export class UsersController {
 
 
   @Get('name/:full_name')
-  async findByName(@Param('full_name') full_name: string, @Res() res: Response) {
+  @HttpCode(HttpStatus.OK)
+  async findByName(@Param('full_name') full_name: string): Promise<{ success: boolean, message: string, data: object }> {
 
     const user = await this.usersService.findByName(full_name)
 
-    res.status(200).json({ success: true, message: 'Successfull get user profile', data: user })
-
+    return {
+      success: true,
+      message: 'Successfully get user profile',
+      data: user,
+    };
   }
 
 
@@ -37,26 +40,18 @@ export class UsersController {
 
 
   @Get('profile')
-  @Roles(UserRole.USER)
   getProfile(@Req() req: Request, @Res() res: Response) {
     const user = req?.user
     delete user.password
-
     res.status(200).json({ success: true, message: 'Successfull get user profile', data: user })
   }
-
-
-  @Patch()
-  @Roles(UserRole.USER)
-  update(@Body() updateUserDto: UpdateUserDto, @Req() req: Request) {
-    const id = req?.user.id
-    return this.usersService.update(id, updateUserDto);
-  }
+  
 
   @Patch('user-profile')
-  @Roles(UserRole.USER)
-  updateUserProfile(@Body() updateUserProfileDto: UpdateUserProfileDto, @Req() req: Request) {
-    return this.usersService.updateUserProfile(req?.user, updateUserProfileDto);
+  async updateUserProfile(@Body() updateUserProfileDto: UpdateUserProfileDto, @Req() req: Request, @Res() res: Response) {
+    const data = await this.usersService.updateUserProfile(req?.user, updateUserProfileDto);
+    
+    res.status(200).json({ success: true, message: 'Successfull update user profile', data })
   }
 
 

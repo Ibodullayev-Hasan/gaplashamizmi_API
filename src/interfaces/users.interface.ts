@@ -1,5 +1,5 @@
-import { SavedMessages } from "../modules/users/entities/saved-messages.entitie";
-import { UserProfile } from "../modules/users/entities/user-profiles.entitie";
+import { SavedMessages } from "../modules/users/entities/saved-messages.entity";
+import { UserProfile } from "../modules/users/entities/user-profiles.entity";
 
 export interface IUsers {
 	id: string

@@ -7,10 +7,9 @@ export function setupGlobalPipes(app: INestApplication) {
 			forbidNonWhitelisted: true,
 			transform: true,
 			exceptionFactory: (errors) => {
-				const messages = errors.map((error) => ({
-					property: error.property,
-					constraints: error.constraints,
-				}));
+				const messages = errors.flatMap(error =>
+					Object.values(error.constraints || {})
+				);
 				return new BadRequestException(messages);
 			},
 		}),

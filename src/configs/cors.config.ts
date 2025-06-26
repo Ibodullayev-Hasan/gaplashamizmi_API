@@ -1,9 +1,16 @@
 import { INestApplication } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import * as cookieParser from "cookie-parser";
-// "http://127.0.0.1:5500"
-export function corsConfig(app: INestApplication) {
+
+export function corsConfig(app: INestApplication): void {
+
+	const configService = app.get(ConfigService);
+
+	const corsOriginDev: string = configService.get<string>("CORS_ORIGIN_DEV") || "http://localhost:3000";
+	const corsOriginPro: string = configService.get<string>("CORS_ORIGIN_PRO") || "http://localhost:3000";
+
 	app.enableCors({
-		origin: ["http://localhost:3000", "https://gaplashamiz.netlify.app",],
+		origin: [corsOriginDev, corsOriginPro],
 		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 		credentials: true
 	});

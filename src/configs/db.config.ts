@@ -1,22 +1,14 @@
-import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
-import { ConfigService } from '@nestjs/config';
-import { SavedMessages, User, UserProfile } from "../entities"
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import * as path from 'path';
+import { registerAs } from '@nestjs/config';
 
-export const databaseConfig: TypeOrmModuleAsyncOptions = {
-	useFactory: async (configService: ConfigService) => ({
-		type: 'postgres',
-		url: configService.get<string>('DATABASE_URL'),
-		synchronize: true,
-		logging: false,
-		autoLoadEntities: true,
-		entities: [
-			User,
-			UserProfile,
-			SavedMessages,
-		],
-		extra: {
-			charset: "utf8"
-		},
-	}),
-	inject: [ConfigService],
-};
+export default registerAs(
+  'dbconfig.dev',
+  (): PostgresConnectionOptions => ({
+    type: 'postgres',
+    url: process.env.DATABASE_URL,
+    entities: [path.resolve(__dirname, '..') + '/**/*.entity{.ts,.js}'],
+    synchronize: true,
+    logging: false,
+  }),
+);
