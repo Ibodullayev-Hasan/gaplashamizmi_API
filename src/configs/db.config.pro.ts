@@ -7,5 +7,5 @@ export default (): PostgresConnectionOptions => ({
   type: 'postgres',
   entities: [path.resolve(__dirname, '..') + '/**/*.entity{.ts,.js}'],
 
-  synchronize: false,
+  synchronize:true,
 });
