@@ -15,7 +15,7 @@ async function bootstrap() {
   const logger = new Logger('Gaplashamizmi-api');
 
   try {
-    console.log(process.env.DATABASE_URL);
+    console.log(`typeof process.env.DATABASE_URL:  ${typeof process.env.DATABASE_URL}`);
     
     const configService = app.get(ConfigService);
     const port = configService.get<number>('SERVER_PORT') ?? 5000;
