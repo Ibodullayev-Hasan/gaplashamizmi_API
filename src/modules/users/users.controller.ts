@@ -21,9 +21,11 @@ export class UsersController {
 
   @Get('name/:full_name')
   @HttpCode(HttpStatus.OK)
-  async findByName(@Param('full_name') full_name: string): Promise<{ success: boolean, message: string, data: object }> {
+  async findByName(@Param('full_name') full_name: string, @Req() req: Request): Promise<
+    { success: boolean, message: string, data: object }
+  > {
 
-    const user = await this.usersService.findByName(full_name)
+    const user = await this.usersService.findByName(full_name, req.user?.id)
 
     return {
       success: true,
@@ -45,12 +47,12 @@ export class UsersController {
     delete user.password
     res.status(200).json({ success: true, message: 'Successfull get user profile', data: user })
   }
-  
+
 
   @Patch('user-profile')
   async updateUserProfile(@Body() updateUserProfileDto: UpdateUserProfileDto, @Req() req: Request, @Res() res: Response) {
     const data = await this.usersService.updateUserProfile(req?.user, updateUserProfileDto);
-    
+
     res.status(200).json({ success: true, message: 'Successfull update user profile', data })
   }
 

@@ -35,28 +35,28 @@ export class UsersService {
   }
 
   // find by name
-  async findByName(full_name: string): Promise<Omit<User, "password">[]> {
+  async findByName(full_name: string, id: string): Promise<Omit<User, "password">[]> {
     try {
       const users = await this.userRepo.find({
         where: { full_name: ILike(`%${full_name.trim()}%`) }
       });
-      
+
+      console.log();
+
       if (users.length === 0) {
-        console.log('salom');
         throw new NotFoundException("Not found user")
-        
       }
-        
-        return users.map(({ password, role, ...user }) => user)
-      } catch (error: any) {
-        throw error instanceof HttpException
+
+      return users.map(({ password, role, ...user }) => user).filter(user => user.id !== id)
+    } catch (error: any) {
+      throw error instanceof HttpException
         ? error
         : new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      }
     }
-    
-    
-    // find by email
+  }
+
+
+  // find by email
   async findByEmail(email: string): Promise<Omit<User, "password">[]> {
     try {
       const users = await this.userRepo.find({
