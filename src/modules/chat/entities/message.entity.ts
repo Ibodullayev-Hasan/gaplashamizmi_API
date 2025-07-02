@@ -20,4 +20,7 @@ export class Message {
 
   @ManyToOne(() => Chat, (chat) => chat.message)
   chat: Chat;
+
+  @CreateDateColumn({ type: "timestamptz" })
+  createdAt: Date;
 }

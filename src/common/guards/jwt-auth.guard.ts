@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate {
 			const bytes = CryptoJS.AES.decrypt(token, process.env.AES_KEY)
 			token = bytes.toString(CryptoJS.enc.Utf8)
 
-			const decoded = await this.jwtService.verify(token, { secret: this.jwtSecretKey, })
+			const decoded = await this.jwtService.verify(token, { secret: this.jwtSecretKey,})
 
 			const user: User = await this.userRepo.findOne({ where: { id: decoded?.sub } })
 			if (!user) throw new UnauthorizedException(`Ro'yxatdan o'tmagan user`)
@@ -41,7 +41,7 @@ export class AuthGuard implements CanActivate {
 			request.user = user
 			return true
 		} catch (error: any) {
-			if (error.name === "JsonWebTokenError" || error.message === "Malformed UTF-8 data") throw new UnauthorizedException("Xato token")
+			// if (error.name === "JsonWebTokenError" || error.message === "Malformed UTF-8 data") throw new UnauthorizedException("Xato token")
 
 			if (error.name === "TokenExpiredError") throw new UnauthorizedException("Token amal qilish muddati tugagan")
 
