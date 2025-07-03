@@ -15,8 +15,11 @@ import dbConfigDev from './configs/db.config';
 import dbConfigProd from './configs/db.config.pro';
 import { AllexceptionFilter } from './common/filters';
 
+console.log(process.env.NODE_ENV);
+
 @Module({
   imports: [
+    
     ConfigModule.forRoot(envConfig),
 
     JwtModule.registerAsync(JwtConfig),
