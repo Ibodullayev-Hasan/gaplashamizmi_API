@@ -6,6 +6,5 @@ export default (): PostgresConnectionOptions => ({
   url: process.env.DATABASE_URL as string,
   type: 'postgres',
   entities: [path.resolve(__dirname, '..') + '/**/*.entity{.ts,.js}'],
-  synchronize: false,
-  logging: false
+  synchronize: true
 });
