@@ -16,6 +16,7 @@ import dbConfigProd from './configs/db.config.pro';
 import { AllexceptionFilter } from './common/filters';
 
 console.log(process.env.NODE_ENV);
+console.log({envFilePath: `.env.${process.env.NODE_ENV}`});
 
 @Module({
   imports: [
