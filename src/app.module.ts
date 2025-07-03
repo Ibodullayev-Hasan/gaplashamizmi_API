@@ -9,11 +9,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { cacheManagerConfig, envConfig, JwtConfig } from './configs';
 import { DomenMiddleware } from './common/middlewares/domen.middleware';
-import { GlobalResponseFormatterInterceptor } from './common/interceptors/response-formatter.interceptor';
 import { ChatModule } from './modules/chat/chat.module';
 
 import dbConfigDev from './configs/db.config';
 import dbConfigProd from './configs/db.config.pro';
+import { AllexceptionFilter } from './common/filters';
 
 @Module({
   imports: [
@@ -36,7 +36,7 @@ import dbConfigProd from './configs/db.config.pro';
   providers: [
     {
       provide: APP_FILTER,
-      useClass: GlobalResponseFormatterInterceptor
+      useClass: AllexceptionFilter
     }
   ],
   exports: [CacheModule, JwtModule]

@@ -1,4 +1,3 @@
-// gateway/chat.gateway.ts
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -11,89 +10,120 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
-import { HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { UseFilters } from '@nestjs/common';
+import { WsAllExceptionsFilter } from '../../common/filters';
 
 @WebSocketGateway({ cors: true, namespace: '/chat' })
+@UseFilters(WsAllExceptionsFilter)
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  private activeUsers = new Map<string, string>();
+  private activeUsers = new Map<string, Set<string>>();
 
-  constructor(
-    private readonly chatService: ChatService,
-  ) { }
+  constructor(private readonly chatService: ChatService) { }
 
-  // ws connection
+
+  // user socket ga ulanishi
   async handleConnection(@ConnectedSocket() client: Socket) {
     try {
-      const user = await this.chatService.validateUserFromSocket(client);
-      
-      this.activeUsers.set(user.id, client.id);
+      const token = client.handshake.query.token as string;
+
+      if (!token) throw new WsException({ message: `Token taqdim etilmadi`, statusCode: 401 });
+
+      const user = await this.chatService.validateUserFromToken(token);
+
+      const sockets = this.activeUsers.get(user.id) || new Set();
+      sockets.add(client.id);
+      this.activeUsers.set(user.id, sockets);
+
       client.join(user.id);
-      
-      // console.log(`client joined:${client.id}`);
       this.server.emit('users', Array.from(this.activeUsers.keys()));
     } catch (error: any) {
-      throw new WsException(error.message);
+      // token noto'g'ri bo'lsa clientga ws-error yuborish
+      client.emit('ws-error', {
+        success: false,
+        timestamp: new Date().toISOString(),
+        message: error?.message || 'Ulanishda xatolik',
+        status: 400
+      });
+
+      // muhim: connectionni uzamiz
+      client.disconnect(true);
     }
   }
-  
-  // ws desconnected
+
+  // typing
+  @SubscribeMessage('typing')
+  handleTyping(@MessageBody() data: { senderId: string; receiverId: string }) {
+    this.server.to(data.receiverId).emit('typing', { senderId: data.senderId });
+  }
+
+  // 
+  @SubscribeMessage('join-room')
+  handleJoinRoom(@MessageBody() room: string, @ConnectedSocket() client: Socket) {
+    client.join(room);
+  }
+
+  // user socket dan uzilishi
   async handleDisconnect(@ConnectedSocket() client: Socket) {
-    const userId = [...this.activeUsers.entries()].find(([_id, socketId]) => socketId === client.id)?.[0];
-    if (userId) {
-      this.activeUsers.delete(userId);
-
-      // console.log(`client desconnected:${client.id}`);
-      this.server.emit('users', Array.from(this.activeUsers.keys()));
+    for (const [userId, sockets] of this.activeUsers.entries()) {
+      if (sockets.has(client.id)) {
+        sockets.delete(client.id);
+        if (sockets.size === 0) this.activeUsers.delete(userId);
+        break;
+      }
     }
+    this.server.emit('users', Array.from(this.activeUsers.keys()));
   }
 
-  @SubscribeMessage('register')
-  handleRegister(@MessageBody() userId: string, @ConnectedSocket() client: Socket) {
-    if (!this.activeUsers.has(userId)) {
-
-      this.activeUsers.set(userId, client.id);
-
-      client.join(userId); 
-
-      // console.log(`client registred:${userId}`);
-      
-      this.server.emit('users', Array.from(this.activeUsers.keys())); // online update
-    }
-  }
-
-  // send-message
   @SubscribeMessage('send-message')
   async handleSend(
     @MessageBody() data: { senderId: string; receiverId: string; text: string },
     @ConnectedSocket() client: Socket,
   ) {
-    const message = await this.chatService.sendMessage(
-      data.senderId,
-      data.receiverId,
-      data.text,
-    );
+    try {
+      const message = await this.chatService.sendMessage(
+        data.senderId,
+        data.receiverId,
+        data.text,
+      );
 
-    this.server.to(data.receiverId).emit('receive-message', message);
+      const room = await this.chatService.getOrCreateChatRoomId(
+        data.senderId,
+        data.receiverId,
+      );
+
+      this.server.to(room).emit('receive-message', message);
+    } catch (error: any) {
+      throw new WsException(error.message);
+    }
   }
 
-  // typing
-  @SubscribeMessage('typing')
-  handleTyping(
-    @MessageBody() data: { senderId: string; receiverId: string },
-  ) {
-    this.server.to(data.receiverId).emit('typing', { senderId: data.senderId });
-  }
 
-  // get history
+  // History
   @SubscribeMessage('get-history')
   async handleHistory(
     @MessageBody() data: { userId: string; withUserId: string },
     @ConnectedSocket() client: Socket,
   ) {
-    const messages = await this.chatService.getChatMessages(data.userId, data.withUserId);
-    client.emit('chat-history', messages);
+    try {
+      const messages = await this.chatService.getChatMessages(
+        data.userId,
+        data.withUserId,
+      );
+
+      const room = await this.chatService.getOrCreateChatRoomId(
+        data.userId,
+        data.withUserId,
+      );
+
+      client.join(room);
+
+      client.emit('chat-history', { chatId: room.split("chat_")[1], messages });
+    } catch (error: any) {
+      throw new WsException(error.message);
+    }
   }
+
 }

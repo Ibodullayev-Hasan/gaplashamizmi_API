@@ -1,12 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { HttpException, HttpStatus, Logger, NotFoundException, VersioningType } from '@nestjs/common';
+import { Logger, VersioningType } from '@nestjs/common';
 import { corsConfig, setupGlobalPipes, setUpswagger } from './configs';
-import { NotFoundExceptionFilter } from './common/filters/http-exception.filter';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { createWinstonLogger } from './common/services/logger';
+import { RoutesExceptionFilter } from './common/filters';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -15,7 +15,7 @@ async function bootstrap() {
   const logger = new Logger('Gaplashamizmi-api');
 
   try {
-    
+
     const configService = app.get(ConfigService);
     const port = configService.get<number>('SERVER_PORT') ?? 5000;
 
@@ -33,7 +33,7 @@ async function bootstrap() {
     // WebSocket uchun adapter o‘rnatish
     app.useWebSocketAdapter(new IoAdapter(httpServer));
 
-    app.useGlobalFilters(new NotFoundExceptionFilter());
+    app.useGlobalFilters(new RoutesExceptionFilter());
 
     // HTTP va WebSocket bitta portda ishlaydi
     await app.listen(port);

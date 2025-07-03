@@ -41,7 +41,7 @@ export class AuthGuard implements CanActivate {
 			request.user = user
 			return true
 		} catch (error: any) {
-			// if (error.name === "JsonWebTokenError" || error.message === "Malformed UTF-8 data") throw new UnauthorizedException("Xato token")
+			if (error.name === "JsonWebTokenError" || error.message === "Malformed UTF-8 data") throw new UnauthorizedException("Xato token")
 
 			if (error.name === "TokenExpiredError") throw new UnauthorizedException("Token amal qilish muddati tugagan")
 

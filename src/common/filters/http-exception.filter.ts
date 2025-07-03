@@ -21,7 +21,7 @@ export const allowedRoutes: { path: string; methods: string[] }[] = [
 
 
 @Catch(NotFoundException)
-export class NotFoundExceptionFilter implements ExceptionFilter {
+export class RoutesExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
