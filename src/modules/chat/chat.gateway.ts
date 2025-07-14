@@ -34,8 +34,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const user = await this.chatService.validateUserFromToken(token);
 
       const sockets = this.activeUsers.get(user.id) || new Set();
+
       sockets.add(client.id);
+
       this.activeUsers.set(user.id, sockets);
+
+      await this.chatService.updateUserOnlineStatus(user.id, true);
+      this.server.emit('user-status-changed', { userId: user.id, is_online: true });
 
       client.join(user.id);
       this.server.emit('users', Array.from(this.activeUsers.keys()));
@@ -69,8 +74,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     for (const [userId, sockets] of this.activeUsers.entries()) {
       if (sockets.has(client.id)) {
+
         sockets.delete(client.id);
+
         if (sockets.size === 0) this.activeUsers.delete(userId);
+
+        await this.chatService.updateUserOnlineStatus(userId, false);
+
+        this.server.emit('user-status-changed', { userId, is_online: false });
+
         break;
       }
     }
@@ -94,11 +106,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         data.receiverId,
       );
 
+      // ✅ xabar yuborildi — room ichidagilarga jo‘natamiz
       this.server.to(room).emit('receive-message', message);
+
+      // ✅ faqat o‘sha yozgan userga recent-users ni qayta yuboramiz
+      const recent = await this.chatService.recentUsers(data.senderId);
+      client.emit('recent-users', recent);
+
     } catch (error: any) {
       throw new WsException(error.message);
     }
   }
+
 
 
   // History
@@ -126,4 +145,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-}
+  @SubscribeMessage('recent-users')
+  async handleRecentUsers(@ConnectedSocket() client: Socket) {
+    try {
+      const token = client.handshake.query.token as string;
+
+      if (!token) throw new WsException({ message: `Token taqdim etilmadi`, statusCode: 401 });
+
+      const user = await this.chatService.validateUserFromToken(token);
+
+      const recent = await this.chatService.recentUsers(user.id);
+
+      client.emit('recent-users', recent);
+    } catch (error: any) {
+      client.emit('ws-error', {
+        success: false,
+        message: error?.message || 'Recent users olishda xatolik',
+      });
+    }
+  }
+
+
+};

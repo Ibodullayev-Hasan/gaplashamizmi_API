@@ -1,7 +1,7 @@
 import { ConfigModuleOptions } from "@nestjs/config"
 import emailConfig from "./email.config"
-import dbConfigDev from './db.config';
-import dbConfigProd from './db.config.pro';
+import dbConfigDev from '../database/configs/db.config';
+import dbConfigProd from '../database/configs/db.config.pro';
 
 export const envConfig: ConfigModuleOptions = {
 	load: [emailConfig, dbConfigDev, dbConfigProd],

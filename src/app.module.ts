@@ -11,12 +11,10 @@ import { cacheManagerConfig, envConfig, JwtConfig } from './configs';
 import { DomenMiddleware } from './common/middlewares/domen.middleware';
 import { ChatModule } from './modules/chat/chat.module';
 
-import dbConfigDev from './configs/db.config';
-import dbConfigProd from './configs/db.config.pro';
+import dbConfigDev from './database/configs/db.config';
+import dbConfigProd from './database/configs/db.config.pro';
 import { AllexceptionFilter } from './common/filters';
 
-console.log(process.env.NODE_ENV);
-console.log({envFilePath: `.env.${process.env.NODE_ENV}`});
 
 @Module({
   imports: [

@@ -28,6 +28,9 @@ export class User implements IUsers {
 	@Column({ type: "boolean", default: true })
 	is_active?: boolean;
 
+	@Column({ type: 'boolean', default: false })
+	is_online?: boolean;
+
 	@CreateDateColumn({ name: "created_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
 	created_at?: Date;
 

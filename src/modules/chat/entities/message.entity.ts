@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, CreateDateColumn } from 'typeorm';
 import { Chat } from './chat.entity';
-import { User } from '../../../entities';
 import { MessageType } from '../../../enums/message-type.enum';
 
 

@@ -1,6 +1,5 @@
 import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { SavedMessages, User, UserProfile } from '../../entities';
+import { SavedMessages, User, UserProfile } from '../../database/entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 
@@ -35,19 +34,22 @@ export class UsersService {
   }
 
   // find by name
-  async findByName(full_name: string, id: string): Promise<Omit<User, "password">[]> {
+  async findByName(searchTerm: string, id: string,): Promise<Omit<User, "password">[]> {
     try {
+
       const users = await this.userRepo.find({
-        where: { full_name: ILike(`%${full_name.trim()}%`) }
+        where: [
+          { full_name: ILike(`%${searchTerm.trim()}%`) }
+        ],
       });
 
-      console.log();
+      if (users.length === 0) throw new HttpException("Not found user", HttpStatus.NOT_FOUND)
 
-      if (users.length === 0) {
-        throw new NotFoundException("Not found user")
-      }
+      const filteredUsersData = users.map(({ password, role, ...user }) => user).filter(user => user.id !== id)
 
-      return users.map(({ password, role, ...user }) => user).filter(user => user.id !== id)
+      if (filteredUsersData.length === 0) throw new HttpException("Not found user", HttpStatus.NOT_FOUND)
+
+      return filteredUsersData
     } catch (error: any) {
       throw error instanceof HttpException
         ? error
@@ -56,36 +58,53 @@ export class UsersService {
   }
 
 
-  // find by email
-  async findByEmail(email: string): Promise<Omit<User, "password">[]> {
-    try {
-      const users = await this.userRepo.find({
-        where: { email: ILike(`%${email}%`) }
-      });
-
-      return users.map(({ password, role, ...user }) => user);
-    } catch (error: any) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
-  }
-
   // update user profile 
-  async updateUserProfile(user: User, updateUserProfileDto: UpdateUserProfileDto) {
-    try {
+  async updateUserProfile(user: User, dto: UpdateUserProfileDto) {
+    if (!Object.keys(dto).length) {
+      throw new BadRequestException('Yangilash uchun biror maydon kiritish zarur');
+    }
 
-      if (!Object.keys(updateUserProfileDto).length) {
-        throw new BadRequestException(`Yangilash uchun biror maydon kiritish zarur`);
+    const userId = user.id;
+    const userProfileId = user.user_profile.id;
+
+    const userFields = ['full_name', 'avatar_uri', 'email']; 
+    const profileFields = ['chat_back_img', '']; // Related jadval
+
+    const userUpdate: Partial<User> = {};
+    const profileUpdate: Partial<UserProfile> = {};
+
+    for (const key in dto) {
+      if (userFields.includes(key)) {
+        userUpdate[key] = dto[key];
+      } else if (profileFields.includes(key)) {
+        profileUpdate[key] = dto[key];
+      }
+    }
+
+    // Transaction bilan — xavfsiz yo‘l
+    const queryRunner = this.userRepo.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      if (Object.keys(userUpdate).length) {
+        await queryRunner.manager.update(User, userId, userUpdate);
       }
 
-      const userProfileId = user.user_profile.id
+      if (Object.keys(profileUpdate).length) {
+        await queryRunner.manager.update(UserProfile, userProfileId, profileUpdate);
+      }
 
-      const { affected } = await this.userProfileRepo.update(userProfileId, updateUserProfileDto)
-
-      return affected && affected > 0 ? 'Muvaffaqiyatli yangilandi' : 'Yangilash amalga oshmadi'
-    } catch (error: any) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      await queryRunner.commitTransaction();
+      return 'Muvaffaqiyatli yangilandi';
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    } finally {
+      await queryRunner.release();
     }
   }
+
 
   remove(id: number) {
     return `This action removes a #${id} user`;

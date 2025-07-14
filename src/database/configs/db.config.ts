@@ -7,8 +7,8 @@ export default registerAs(
   (): PostgresConnectionOptions => ({
     type: 'postgres',
     url: process.env.DATABASE_URL as string,
-    entities: [path.resolve(__dirname, '..') + '/**/*.entity{.ts,.js}'],
-    synchronize: true,
+    entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
+    synchronize: false,
     logging: false,
   }),
 );

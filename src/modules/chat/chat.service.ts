@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { Chat } from './entities/chat.entity';
 import { Message } from './entities/message.entity';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../../entities';
+import { User } from '../../database/entities';
 import { WsException } from '@nestjs/websockets';
 import * as CryptoJS from 'crypto-js';
 
@@ -76,20 +76,77 @@ export class ChatService {
 
   // 
   async getOrCreateChatRoomId(userA: string, userB: string): Promise<string> {
-    let chat = await this.chatRepo.findOne({
-      where: [
-        { senderId: userA, receiverId: userB },
-        { senderId: userB, receiverId: userA },
-      ],
-    });
+    try {
+      let chat = await this.chatRepo.findOne({
+        where: [
+          { senderId: userA, receiverId: userB },
+          { senderId: userB, receiverId: userA },
+        ],
+      });
 
-    if (!chat) {
-      chat = this.chatRepo.create({ senderId: userA, receiverId: userB });
-      chat = await this.chatRepo.save(chat);
+      if (!chat) {
+        chat = this.chatRepo.create({ senderId: userA, receiverId: userB });
+        chat = await this.chatRepo.save(chat);
+      }
+
+      return `chat_${chat.id}`;
+
+
+    } catch (error: any) {
+      throw new WsException(error.message)
     }
-
-    return `chat_${chat.id}`;
   }
 
+
+  // recent users
+  async recentUsers(currentUserId: string): Promise<{ user: User, lastMessage: Message }[]> {
+    try {
+      // Foydalanuvchi ishtirok etgan barcha chatlar
+      const chats = await this.chatRepo.find({
+        where: [
+          { senderId: currentUserId },
+          { receiverId: currentUserId },
+        ],
+        relations: ['message'],
+      });
+
+      const result = [];
+
+      for (const chat of chats) {
+        const otherUserId =
+          chat.senderId === currentUserId ? chat.receiverId : chat.senderId;
+
+        const otherUser = await this.userRepo
+          .createQueryBuilder("user")
+          .select(["user.id", "user.full_name", "user.avatar_uri", "user.email", "user.is_online"])
+          .where("user.id = :id", { id: otherUserId })
+          .getOne();
+
+        const lastMessage = await this.messageRepo.findOne({
+          where: { chat: { id: chat.id } },
+          order: { createdAt: 'DESC' },
+        });
+
+        if (otherUser && lastMessage) {
+          result.push({ user: otherUser, lastMessage });
+        }
+      }
+
+      // oxirgi xabar vaqti bo‘yicha sortlash
+      return result.sort((a, b) =>
+        b.lastMessage.createdAt.getTime() - a.lastMessage.createdAt.getTime(),
+      );
+    } catch (error: any) {
+      throw new WsException(error.message);
+    }
+  }
+
+  async updateUserOnlineStatus(userId:string, isOnline:boolean):Promise<void>{
+    try {
+      await this.userRepo.update(userId, {is_online:isOnline})
+    } catch (error:any) {
+      throw new WsException(error.message);      
+    }
+  }
 
 }

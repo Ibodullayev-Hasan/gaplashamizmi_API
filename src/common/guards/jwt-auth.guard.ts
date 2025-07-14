@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext, HttpException, HttpStatus, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from "@nestjs/jwt"
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../entities';
+import { User } from '../../database/entities';
 import { Repository } from 'typeorm';
 import * as CryptoJS from 'crypto-js';
 

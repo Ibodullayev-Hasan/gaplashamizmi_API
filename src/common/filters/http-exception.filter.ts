@@ -17,6 +17,8 @@ export const allowedRoutes: { path: string; methods: string[] }[] = [
   { path: '/auth/logout', methods: ['POST'] },
   { path: '/users/profile', methods: ['GET'] },
   { path: '/users/name/:full_name', methods: ['GET'] }, // dinamik
+  { path: '/users/avatar', methods: ['POST'] },     // ✅ yangi qo‘shildi
+  { path: '/chat/recent', methods: ['GET'] },
 ];
 
 
