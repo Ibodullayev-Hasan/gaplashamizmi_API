@@ -10,14 +10,10 @@ export class ChatController {
 	// get recent users
 	@UseGuards(AuthGuard)
 	@Get('recent')
-	async recentUsers(@Req() req: Request) {
+	async recentUsers(@Req() req: Request, @Res() res: Response) {
 		const data = await this.chatService.recentUsers(req?.user?.id)
 
-		return {
-			success: true,
-			message: 'Successfull get recent users ',
-			data,
-		};
+		res.status(200).json({ success: true, message: 'Successfull get recent users ', data })
 
 	}
 }

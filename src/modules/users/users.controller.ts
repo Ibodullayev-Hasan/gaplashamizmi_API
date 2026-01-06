@@ -42,36 +42,28 @@ export class UsersController {
 
 
   @Get('name/:searchTerm')
-  @HttpCode(HttpStatus.OK)
-  async findByName(@Param('searchTerm') searchTerm: string, @Req() req: Request) {
+  @HttpCode(HttpStatus.OK)  
+  async findByName(@Param('searchTerm') searchTerm: string, @Req() req: Request, @Res() res: Response) {
 
     const user = await this.usersService.findByName(searchTerm, req.user?.id)
 
-    return {
-      success: true,
-      message: 'Successfull get users data',
-      data: user,
-    };
+    res.status(200).json({ success: true, message: 'Successfull get users data', data: user })
   }
 
 
   @Get('profile')
-  getProfile(@Req() req: Request) {
+  getProfile(@Req() req: Request, @Res() res: Response) {
     const user = req?.user
     delete user.password
-
+    res.status(200).json({ success: true, message: 'Successfull get user profile', data: user })
   }
 
 
   @Patch('user-profile')
-  async updateUserProfile(@Body() updateUserProfileDto: UpdateUserProfileDto, @Req() req: Request) {
+  async updateUserProfile(@Body() updateUserProfileDto: UpdateUserProfileDto, @Req() req: Request, @Res() res: Response) {
     const data = await this.usersService.updateUserProfile(req?.user, updateUserProfileDto);
 
-    return {
-      success: true,
-      message: 'Successfull update user profile',
-      data,
-    };
+    res.status(200).json({ success: true, message: 'Successfull update user profile', data })
   }
 
 
