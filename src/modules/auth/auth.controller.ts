@@ -11,27 +11,39 @@ export class AuthController {
 	constructor(private readonly authService: AuthService) { }
 
 	@Post('sign-up')
-	async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+	async signUp(@Body() createUserDto: CreateUserDto) {
 		const data: object = await this.authService.create(createUserDto)
 
-		res.status(201).json({ sucsess: true, message: 'Successfull register', data })
+		return {
+			success: true,
+			message: 'Successfull register',
+			data,
+		};
 	}
 
 	@Post('login')
 	@HttpCode(HttpStatus.OK)
-	async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+	async login(@Body() loginDto: LoginDto) {
 		const data: object = await this.authService.login(loginDto)
 
-		res.status(200).json({ success: true, message: 'Successfull login', data })
+		return {
+			success: true,
+			message: 'Successfull login',
+			data,
+		};
 	}
 
 	@Post('refresh')
 	@UseGuards(AuthGuard)
-	async refreshToken(@Req() req: Request, @Res() res: Response) {
+	async refreshToken(@Req() req: Request) {
 
 		const data: object = await this.authService.refreshToken(req?.user)
 
-		res.status(200).json({ success: true, message: 'Token refresh', data })
+		return {
+			success: true,
+			message: 'Token refresh',
+			data,
+		};
 	}
 
 }

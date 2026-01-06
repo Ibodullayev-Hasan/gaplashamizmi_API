@@ -8,6 +8,8 @@ export function corsConfig(app: INestApplication): void {
 
 	const corsOriginDev: string = configService.get<string>("CORS_ORIGIN_DEV") || "http://localhost:3000";
 	const corsOriginPro: string = configService.get<string>("CORS_ORIGIN_PRO") || "http://localhost:3000";
+console.log("dev:  "+corsOriginDev);
+console.log("pro:  "+corsOriginPro);
 
 	app.enableCors({
 		origin: [corsOriginDev, corsOriginPro],
