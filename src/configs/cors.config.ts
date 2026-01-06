@@ -11,7 +11,8 @@ export function corsConfig(app: INestApplication): void {
 
 	app.enableCors({
 		origin: [corsOriginDev, corsOriginPro],
-		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+		allowedHeaders: 'Content-Type, Authorization',
 		credentials: true
 	});
 	app.use(cookieParser())
