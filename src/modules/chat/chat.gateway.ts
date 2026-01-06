@@ -43,7 +43,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.emit('user-status-changed', { userId: user.id, is_online: true });
 
       client.join(user.id);
-      this.server.emit('users', Array.from(this.activeUsers.keys()));
     } catch (error: any) {
       // token noto'g'ri bo'lsa clientga ws-error yuborish
       client.emit('ws-error', {
@@ -86,7 +85,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         break;
       }
     }
-    this.server.emit('users', Array.from(this.activeUsers.keys()));
   }
 
   @SubscribeMessage('send-message')

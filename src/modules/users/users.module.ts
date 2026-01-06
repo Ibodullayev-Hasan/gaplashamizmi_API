@@ -16,7 +16,7 @@ import { SpacesService } from '../../common/services/spaces.service';
   imports: [
     ConfigModule,
 
-    CacheModule.registerAsync(cacheManagerConfig),
+    // CacheModule.registerAsync(cacheManagerConfig),
 
     TypeOrmModule.forFeature([User, UserProfile, SavedMessages]),
 
