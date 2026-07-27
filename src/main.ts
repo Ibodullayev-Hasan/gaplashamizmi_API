@@ -28,16 +28,13 @@ async function bootstrap() {
     setupGlobalPipes(app);
 
 
-    // NestJS HTTP serverini olish
     const httpServer = app.getHttpServer();
-
-    // WebSocket uchun adapter o‘rnatish
     app.useWebSocketAdapter(new IoAdapter(httpServer));
 
     app.useGlobalFilters(new RoutesExceptionFilter());
 
-    // HTTP va WebSocket bitta portda ishlaydi
     await app.listen(port);
+    
     logger.log(`Server run on port:${port} 🚀`);
   } catch (error: any) {
     logger.error(error.message)
