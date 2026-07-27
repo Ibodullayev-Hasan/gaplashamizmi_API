@@ -27,11 +27,11 @@ import { AllexceptionFilter } from './common/filters';
       useFactory: async () => process.env.NODE_ENV === 'production' ? dbConfigProd() : dbConfigDev()
     }),
 
-    CacheModule.registerAsync(cacheManagerConfig),
+    // CacheModule.registerAsync(cacheManagerConfig),
 
     UsersModule,
     AuthModule,
-    EmailModule,
+    // EmailModule,
     ChatModule
   ],
   controllers: [],
@@ -41,7 +41,7 @@ import { AllexceptionFilter } from './common/filters';
       useClass: AllexceptionFilter
     }
   ],
-  exports: [CacheModule, JwtModule]
+  exports: [JwtModule]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

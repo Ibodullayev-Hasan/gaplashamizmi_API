@@ -13,7 +13,7 @@ export class UsersService {
     @InjectRepository(User) private readonly userRepo: Repository<User>,
     @InjectRepository(UserProfile) private readonly userProfileRepo: Repository<UserProfile>,
     @InjectRepository(SavedMessages) private readonly savedMessagesRepo: Repository<SavedMessages>,
-    @Inject('CACHE_MANAGER') private cache: Cache
+    // @Inject('CACHE_MANAGER') private cache: Cache
   ) { }
 
 
