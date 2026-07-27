@@ -1,23 +1,26 @@
-import { ForbiddenException, NestMiddleware } from "@nestjs/common";
+import { ForbiddenException, Injectable, NestMiddleware } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { Request, Response } from "express";
 
+@Injectable()
 export class DomenMiddleware implements NestMiddleware {
-	private readonly allowedDomains = ['localhost', 'gaplashamizmi-api.onrender.com', 'ibodullayevhasan.uz'];
-	private readonly allowedIp = ['127.0.0.1'];
+    private readonly allowedDomains: string[];
 
-	use(req: Request, res: Response, next: (error?: Error | any) => void) {
-		const host = req.headers.host?.split(':')[0] || '';
+    constructor(
+        private configService: ConfigService
+    ) {
+        const domainLocal = this.configService.getOrThrow('DOMAIN_LOCAL');		
+        const domainPro = this.configService.getOrThrow('DOMAIN_PRO'); 
+        this.allowedDomains = [domainLocal, domainPro];
+    }
 
-		const ipAdress = req.socket.remoteAddress?.replace(/^.*:/, '') || '';
-		// console.log(ipAdress);
-		
-		// console.log(this.allowedIp.includes(ipAdress));
-		
-		if (!this.allowedDomains.includes(host)) {
-			throw new ForbiddenException('Access denied');
-		}
+    use(req: Request, next: (error?: Error | any) => void) {
+        const host = req.headers.host?.split(':')[0] || '';
 
-		next();
-	}
+        if (!this.allowedDomains.includes(host)) {
+            throw new ForbiddenException('Access denied');
+        }
+
+        next();
+    }
 }
-

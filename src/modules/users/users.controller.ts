@@ -42,7 +42,7 @@ export class UsersController {
 
 
   @Get('name/:searchTerm')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.OK)  
   async findByName(@Param('searchTerm') searchTerm: string, @Req() req: Request, @Res() res: Response) {
 
     const user = await this.usersService.findByName(searchTerm, req.user?.id)
