@@ -14,11 +14,12 @@ import { ChatModule } from './modules/chat/chat.module';
 import dbConfigDev from './database/configs/db.config';
 import dbConfigProd from './database/configs/db.config.pro';
 import { AllexceptionFilter } from './common/filters';
+import { HealthController } from './health.controller';
 
 
 @Module({
   imports: [
-    
+
     ConfigModule.forRoot(envConfig),
 
     JwtModule.registerAsync(JwtConfig),
@@ -34,17 +35,19 @@ import { AllexceptionFilter } from './common/filters';
     // EmailModule,
     ChatModule
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [
     {
       provide: APP_FILTER,
       useClass: AllexceptionFilter
     }
   ],
-  exports: [JwtModule]
+  exports: [JwtModule],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(DomenMiddleware).forRoutes("*")
-  }
-}
+export class AppModule { }
+
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer.apply(DomenMiddleware).forRoutes("*")
+//   }
+// }

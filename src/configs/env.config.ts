@@ -4,7 +4,7 @@ import dbConfigDev from '../database/configs/db.config';
 import dbConfigProd from '../database/configs/db.config.pro';
 
 export const envConfig: ConfigModuleOptions = {
-	envFilePath: `.env.${process.env.NODE_ENV}`,
+	envFilePath: `.env.${process.env.NODE_ENV as string}`,
 	load: [emailConfig, dbConfigDev, dbConfigProd],
 	isGlobal: true,
 }

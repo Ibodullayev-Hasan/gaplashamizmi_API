@@ -9,6 +9,10 @@ export default registerAs(
     url: process.env.DATABASE_URL as string,
     entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
     synchronize: false,
-    logging: false,
+    logging: true,
+    connectTimeoutMS: 100,
+    extra: {
+      connectionTimeoutMillis: 100,
+    },
   }),
 );
