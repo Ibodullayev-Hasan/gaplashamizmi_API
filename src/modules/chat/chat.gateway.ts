@@ -44,6 +44,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       client.join(user.id);
     } catch (error: any) {
+
       // token noto'g'ri bo'lsa clientga ws-error yuborish
       client.emit('ws-error', {
         success: false,
@@ -52,7 +53,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         status: 400
       });
 
-      // muhim: connectionni uzamiz
       client.disconnect(true);
     }
   }
@@ -104,10 +104,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         data.receiverId,
       );
 
-      // ✅ xabar yuborildi — room ichidagilarga jo‘natamiz
+      // ✅ xabar yuborildi ]
       this.server.to(room).emit('receive-message', message);
 
-      // ✅ faqat o‘sha yozgan userga recent-users ni qayta yuboramiz
+      // ✅ faqat o‘sha yozgan userga recent-users ni qayta yuborish
       const recent = await this.chatService.recentUsers(data.senderId);
       client.emit('recent-users', recent);
 
