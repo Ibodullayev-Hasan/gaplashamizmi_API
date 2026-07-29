@@ -44,10 +44,9 @@ import { HealthController } from './health.controller';
   ],
   exports: [JwtModule],
 })
-export class AppModule { }
 
-// export class AppModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer.apply(DomenMiddleware).forRoutes("*")
-//   }
-// }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(DomenMiddleware).forRoutes("*")
+  }
+}
