@@ -33,7 +33,7 @@ async function bootstrap() {
 
     app.useGlobalFilters(new RoutesExceptionFilter());
 
-    await app.listen(port, '127.0.0.1');
+    await app.listen(port);
     
     logger.log(`Server run on port:${port} 🚀`);
   } catch (error: any) {
