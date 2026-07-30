@@ -16,7 +16,9 @@ export class DomenMiddleware implements NestMiddleware {
 
     use(req: Request, res: Response, next:NextFunction) {
         const host = req.headers.host?.split(':')[0] || '';
+console.log(host);
 
+console.log(domainPro);
         if (!this.allowedDomains.includes(host)) {
             throw new ForbiddenException('Access denied');
         }
