@@ -8,5 +8,5 @@ export default (): PostgresConnectionOptions => ({
   migrations: [],
   type: 'postgres',
   entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
-  synchronize: true 
+  synchronize: false 
 });
